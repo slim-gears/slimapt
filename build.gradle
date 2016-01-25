@@ -1,0 +1,57 @@
+import org.gradle.internal.jvm.Jvm
+
+ext {
+    javaPoetVersion = '1.0.0'
+    guavaVersion = '18.0'
+    googleCompileTestingVersion = '0.6'
+    googleTruthVersion = '0.25'
+    appacheCommonsIoVersion = '2.4'
+    annimonStreamVersion = '1.0.3'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://jitpack.io" }
+    }
+
+    dependencies {
+        classpath 'com.github.slim-gears:gradle-aio:0.4.9'
+    }
+}
+
+apply plugin: 'root-project-aio'
+
+aioConfig {
+    publishingAio {
+        githubOrg = 'slim-gears'
+    }
+}
+
+apply plugin: 'java-lib-aio'
+apply plugin: 'publishing-aio'
+
+configurations {
+    testOutput.extendsFrom (testCompile)
+}
+
+task testJar(type: Jar, dependsOn: testClasses) {
+    classifier = 'tests'
+    from sourceSets.test.output
+}
+
+artifacts {
+    testOutput testJar
+}
+
+dependencies {
+    compile "com.squareup:javapoet:$javaPoetVersion"
+    compile "com.google.guava:guava:$guavaVersion"
+    compile "com.annimon:stream:$annimonStreamVersion"
+
+    testCompile "com.google.testing.compile:compile-testing:$googleCompileTestingVersion"
+    testCompile "com.google.truth:truth:$googleTruthVersion"
+
+    testCompile files(Jvm.current().getToolsJar())
+}
