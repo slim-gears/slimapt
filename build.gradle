@@ -45,6 +45,14 @@ artifacts {
     testOutput testJar
 }
 
+publishing {
+    publications {
+        maven {
+            artifact project.tasks.testJar
+        }
+    }
+}
+
 dependencies {
     compile "com.squareup:javapoet:$javaPoetVersion"
     compile "com.google.guava:guava:$guavaVersion"

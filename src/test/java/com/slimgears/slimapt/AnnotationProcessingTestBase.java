@@ -36,7 +36,7 @@ public class AnnotationProcessingTestBase {
         return asList(processors);
     }
 
-    private void testAnnotationProcessing(Iterable<AbstractProcessor> processor, Iterable<JavaFileObject> inputs, Iterable<JavaFileObject> expectedOutputs) {
+    protected void testAnnotationProcessing(Iterable<AbstractProcessor> processor, Iterable<JavaFileObject> inputs, Iterable<JavaFileObject> expectedOutputs) {
         assert_()
                 .about(javaSources())
                 .that(inputs)

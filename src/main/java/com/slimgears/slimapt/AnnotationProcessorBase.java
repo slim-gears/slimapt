@@ -2,6 +2,9 @@
 // Refer to LICENSE.txt for license details
 package com.slimgears.slimapt;
 
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
+
 import java.io.IOException;
 import java.util.Set;
 
@@ -44,4 +47,12 @@ public abstract class AnnotationProcessorBase extends AbstractProcessor {
     }
 
     protected abstract boolean processType(TypeElement typeElement) throws IOException;
+
+    protected void writeType(String packageName, TypeSpec type) throws IOException {
+        JavaFile javaFile = JavaFile
+                .builder(packageName, type)
+                .indent("    ")
+                .build();
+        javaFile.writeTo(processingEnv.getFiler());
+    }
 }
