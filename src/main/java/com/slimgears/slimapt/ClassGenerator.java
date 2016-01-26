@@ -32,6 +32,7 @@ public abstract class ClassGenerator<T extends ClassGenerator<T>> {
     private TypeName superClass = TypeName.get(Object.class);
     private Collection<TypeName> superInterfaces = new ArrayList<>();
     private ClassName typeName;
+    private boolean alreadyBuilt = false;
 
     protected ClassGenerator(ProcessingEnvironment processingEnvironment) {
         this.processingEnvironment = processingEnvironment;
@@ -44,19 +45,21 @@ public abstract class ClassGenerator<T extends ClassGenerator<T>> {
         return (T)this;
     }
 
-    protected String getClassName() {
+    public String getClassName() {
         return className;
     }
 
-    protected String getPackageName() {
+    public String getPackageName() {
         return packageName;
     }
 
-    protected ClassName getTypeName() {
+    public ClassName getTypeName() {
         return typeName;
     }
 
     public TypeName build() throws IOException {
+        if (alreadyBuilt) return typeName;
+
         TypeSpec.Builder typeSpecBuilder = TypeSpec
                 .classBuilder(className)
                 .superclass(superClass);
@@ -78,6 +81,7 @@ public abstract class ClassGenerator<T extends ClassGenerator<T>> {
                 .build();
         javaFile.writeTo(processingEnvironment.getFiler());
 
+        alreadyBuilt = true;
         return typeName;
     }
 
@@ -95,7 +99,10 @@ public abstract class ClassGenerator<T extends ClassGenerator<T>> {
     }
 
     public T className(String packageName, String className) {
-        return className(ClassName.get(packageName, className));
+        this.packageName = packageName;
+        this.className = className;
+        this.typeName = ClassName.get(packageName, className);
+        return self();
     }
 
     public T addInterfaces(Type... interfaces) {

@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.MirroredTypesException;
 import javax.lang.model.type.TypeMirror;
@@ -29,6 +30,17 @@ public class TypeUtils {
 
     public static String qualifiedName(String packageName, String simpleName) {
         return packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
+    }
+
+    public static TypeName getTypeName(TypeElement element) {
+        return TypeName.get(element.asType());
+    }
+
+    public static String qualifiedName(TypeElement element) {
+        if (element.getEnclosingElement() instanceof TypeElement) {
+            return qualifiedName((TypeElement)element.getEnclosingElement()) + '$' + element.getSimpleName();
+        }
+        return element.getQualifiedName().toString();
     }
 
     public static ClassName getClassName(String qualifiedClassName) {
