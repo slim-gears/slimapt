@@ -24,20 +24,20 @@ public class PropertyFinder extends ElementVisitorBase<Void, Void> {
         this.elementUtils = elementUtils;
     }
 
-    public class PropertyDescriptor {
+    class PropertyDescriptor {
         String name;
         ExecutableElement getter;
         ExecutableElement setter;
 
-        public boolean isValid() {
+        boolean isValid() {
             return getter != null && setter != null;
         }
 
-        public String getName() {
+        String getName() {
             return TypeUtils.toCamelCase(name);
         }
 
-        public GetterSetterPropertyInfo createPropertyInfo() {
+        GetterSetterPropertyInfo createPropertyInfo() {
             return new GetterSetterPropertyInfo(elementUtils, getName(), getter, setter);
         }
     }
@@ -55,9 +55,10 @@ public class PropertyFinder extends ElementVisitorBase<Void, Void> {
         return null;
     }
 
-    public Collection<PropertyDescriptor> getProperties() {
+    public Collection<PropertyInfo> getProperties() {
         return Stream.of(properties.values())
                 .filter(PropertyDescriptor::isValid)
+                .map(PropertyDescriptor::createPropertyInfo)
                 .collect(Collectors.toList());
     }
 
