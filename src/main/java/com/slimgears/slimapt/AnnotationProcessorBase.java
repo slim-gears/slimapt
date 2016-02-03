@@ -54,6 +54,12 @@ public abstract class AnnotationProcessorBase extends AbstractProcessor {
         return true;
     }
 
+    protected boolean processAnnotation(Class annotationType, RoundEnvironment roundEnv) {
+        return processAnnotation(
+                processingEnv.getElementUtils().getTypeElement(annotationType.getCanonicalName()),
+                roundEnv);
+    }
+
     protected boolean processType(TypeElement typeElement) throws Exception { return false; }
     protected boolean processMethod(ExecutableElement methodElement) throws Exception { return false; }
     protected boolean processField(VariableElement variableElement) throws Exception { return false; }
