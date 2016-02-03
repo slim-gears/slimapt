@@ -1,12 +1,17 @@
 package com.slimgears.slimapt;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
@@ -18,6 +23,34 @@ import javax.lang.model.type.TypeMirror;
  *
  */
 public class TypeUtils {
+    private final static Map<TypeName, Object> DEFAULT_VALUES = ImmutableMap.<TypeName, Object>builder()
+            .put(TypeName.BOOLEAN, false)
+            .put(TypeName.BYTE, (byte) 0)
+            .put(TypeName.CHAR, '\0')
+            .put(TypeName.DOUBLE, 0.0)
+            .put(TypeName.FLOAT, 0.0f)
+            .put(TypeName.INT, 0)
+            .put(TypeName.LONG, 0L)
+            .put(TypeName.SHORT, 0)
+            .build();
+
+    private final static Map<TypeName, Class> BOXED_TYPES = ImmutableMap.<TypeName, Class>builder()
+            .put(TypeName.BOOLEAN, Boolean.class)
+            .put(TypeName.BYTE, Byte.class)
+            .put(TypeName.CHAR, Character.class)
+            .put(TypeName.DOUBLE, Double.class)
+            .put(TypeName.FLOAT, Float.class)
+            .put(TypeName.INT, Integer.class)
+            .put(TypeName.LONG, Long.class)
+            .put(TypeName.SHORT, Short.class)
+            .build();
+
+    private final static Map<TypeName, TypeName> UNBOXED_TYPES = buildUnboxedTypes();
+
+    public static Object defaultValue(TypeName typeName) {
+        return DEFAULT_VALUES.getOrDefault(typeName, null);
+    }
+
     public static String packageName(String qualifiedClassName) {
         int pos = qualifiedClassName.lastIndexOf('.');
         return (pos >= 0) ? qualifiedClassName.substring(0, pos) : "";
@@ -101,14 +134,21 @@ public class TypeUtils {
         }
     }
 
+    public static TypeName unbox(TypeName type) {
+        return UNBOXED_TYPES.getOrDefault(type, type);
+    }
+
     public static TypeName box(TypeName type) {
-        if (type == TypeName.INT) return TypeName.get(Integer.class);
-        if (type == TypeName.SHORT) return TypeName.get(Short.class);
-        if (type == TypeName.LONG) return TypeName.get(Long.class);
-        if (type == TypeName.BOOLEAN) return TypeName.get(Boolean.class);
-        if (type == TypeName.DOUBLE) return TypeName.get(Double.class);
-        if (type == TypeName.FLOAT) return TypeName.get(Float.class);
-        if (type == TypeName.BYTE) return TypeName.get(Byte.class);
-        return type;
+        return  BOXED_TYPES.containsKey(type)
+                ? TypeName.get(BOXED_TYPES.get(type))
+                : type;
+    }
+
+    private static Map<TypeName, TypeName> buildUnboxedTypes() {
+        ImmutableMap.Builder<TypeName, TypeName> builder = ImmutableMap.<TypeName, TypeName>builder();
+        for (Map.Entry<TypeName, Class> entry : BOXED_TYPES.entrySet()) {
+            builder.put(TypeName.get(entry.getValue()), entry.getKey());
+        }
+        return builder.build();
     }
 }
