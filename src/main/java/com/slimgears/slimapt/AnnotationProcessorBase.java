@@ -22,6 +22,14 @@ import javax.lang.model.element.VariableElement;
  */
 public abstract class AnnotationProcessorBase extends AbstractProcessor {
     @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        for (TypeElement annotationType : annotations) {
+            if (!processAnnotation(annotationType, roundEnv)) return false;
+        }
+        return true;
+    }
+
+    @Override
     public SourceVersion getSupportedSourceVersion() {
         return processingEnv.getSourceVersion();
     }
