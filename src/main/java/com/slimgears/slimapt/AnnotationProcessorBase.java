@@ -46,18 +46,17 @@ public abstract class AnnotationProcessorBase extends AbstractProcessor {
                 } else if (element instanceof VariableElement && !processField((VariableElement)element)) {
                     return false;
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
-
         }
         return true;
     }
 
-    protected boolean processType(TypeElement typeElement) throws IOException { return false; }
-    protected boolean processMethod(ExecutableElement methodElement) throws IOException { return false; }
-    protected boolean processField(VariableElement variableElement) throws IOException { return false; }
+    protected boolean processType(TypeElement typeElement) throws Exception { return false; }
+    protected boolean processMethod(ExecutableElement methodElement) throws Exception { return false; }
+    protected boolean processField(VariableElement variableElement) throws Exception { return false; }
 
     protected void writeType(String packageName, TypeSpec type) throws IOException {
         JavaFile javaFile = JavaFile
